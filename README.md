@@ -10,3 +10,7 @@
 - auto-focus on the text-area
 - make the text 2x as big
 - Also read the word that precede it if the character typed is a punctuation mark
+
+# m1c
+- make the text 2x as big
+- When a new line is enter, read the whole previous paragraph instead (regardless of whether there is a new line or space before it).

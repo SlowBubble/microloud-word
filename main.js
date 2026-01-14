@@ -1,11 +1,41 @@
 const textArea = document.getElementById('textArea');
+let lastLength = 0;
 
 textArea.addEventListener('input', (e) => {
     const text = e.target.value;
     const cursorPos = e.target.selectionStart;
     
+    // Ignore if text was deleted (backspace, delete, etc.)
+    if (text.length < lastLength) {
+        lastLength = text.length;
+        return;
+    }
+    lastLength = text.length;
+    
     const lastChar = text[cursorPos - 1];
     const punctuation = ['.', '!', '?', ';', ':'];
+    
+    // Check if last character is newline
+    if (lastChar === '\n') {
+        // Read the whole previous paragraph (look back until non-empty)
+        const textBefore = text.substring(0, cursorPos - 1);
+        const paragraphs = textBefore.split('\n');
+        
+        // Find the last non-empty paragraph
+        let textToSpeak = '';
+        for (let i = paragraphs.length - 1; i >= 0; i--) {
+            if (paragraphs[i].trim()) {
+                textToSpeak = paragraphs[i].trim();
+                break;
+            }
+        }
+        
+        if (textToSpeak) {
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            speechSynthesis.speak(utterance);
+        }
+        return;
+    }
     
     // Check if last character is punctuation
     if (punctuation.includes(lastChar)) {
@@ -21,8 +51,8 @@ textArea.addEventListener('input', (e) => {
         return;
     }
     
-    // Check if last character is space or newline
-    if (lastChar !== ' ' && lastChar !== '\n') return;
+    // Check if last character is space
+    if (lastChar !== ' ') return;
     
     // Check if there's a space/newline before
     const charBefore = text[cursorPos - 2];
