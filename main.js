@@ -1,5 +1,6 @@
 const textArea = document.getElementById('textArea');
 let lastLength = 0;
+let lastSpoken = '';
 
 textArea.addEventListener('input', (e) => {
     const text = e.target.value;
@@ -31,7 +32,9 @@ textArea.addEventListener('input', (e) => {
         }
         
         if (textToSpeak) {
+            lastSpoken = textToSpeak;
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.rate = 0.7;
             speechSynthesis.speak(utterance);
         }
         return;
@@ -45,7 +48,9 @@ textArea.addEventListener('input', (e) => {
         const textToSpeak = wordMatch ? wordMatch[0] : '';
         
         if (textToSpeak) {
+            lastSpoken = textToSpeak;
             const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.rate = 0.7;
             speechSynthesis.speak(utterance);
         }
         return;
@@ -56,7 +61,15 @@ textArea.addEventListener('input', (e) => {
     
     // Check if there's a space/newline before
     const charBefore = text[cursorPos - 2];
-    if (charBefore === ' ' || charBefore === '\n' || charBefore === undefined) return;
+    if (charBefore === ' ' || charBefore === '\n' || charBefore === undefined) {
+        // Repeat last spoken text
+        if (lastSpoken) {
+            const utterance = new SpeechSynthesisUtterance(lastSpoken);
+            utterance.rate = 0.7;
+            speechSynthesis.speak(utterance);
+        }
+        return;
+    }
     
     // Get text before cursor
     const textBefore = text.substring(0, cursorPos - 1);
@@ -77,7 +90,9 @@ textArea.addEventListener('input', (e) => {
     }
     
     if (textToSpeak) {
+        lastSpoken = textToSpeak;
         const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.rate = 0.7;
         speechSynthesis.speak(utterance);
     }
 });
